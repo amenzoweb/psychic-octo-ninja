@@ -13,7 +13,7 @@ var express = require('express')
  */
 
 var port = process.env.PORT || 3000
-  , db = process.env.DB_URL || 'mongodb://localhost/db';
+  , db = process.env.MONGOHQ_URL || 'mongodb://localhost/db';
 
 /**
  * Create server.
