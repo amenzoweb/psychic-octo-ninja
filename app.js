@@ -13,27 +13,43 @@ var express = require('express')
  */
 
 var port = process.env.PORT || 3000
-  , db = process.env.MONGOHQ_URL || 'mongodb://localhost/db';
+  , db = process.env.MONGOHQ_URL || 'mongodb://localhost/db'
+  , key = process.env.SSL_KEY_PATH
+  , cert = process.env.SSL_CERT_PATH;
 
 /**
  * Create server.
  */
 
-var app = module.exports = express.createServer();
+var app;
+
+if(key && cert) { // HTTPS
+  app = module.exports = express.createServer({ key: key, cert: cert });
+}
+else { // HTTP
+  console.log('Warning: Using HTTP');
+
+  app = module.exports = express.createServer();
+}
 
 /**
  * Configure server.
+ * NODE_ENV variable sets environment.
+ * See: http://expressjs.com/guide.html#configuration
  */
 
+// All environments
 app.configure(function() {
   app.use(express.logger());
   app.use(express.bodyParser());
 });
 
+// Development environment
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+// Production environment
 app.configure('production', function() {
   app.use(express.errorHandler());
 });
@@ -61,4 +77,6 @@ app.resource('documents', document_controller);
  * Ninja go!
  */
 
-app.listen(port);
+app.listen(port, function() {
+  console.log('Running...');
+});

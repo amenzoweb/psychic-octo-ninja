@@ -46,7 +46,7 @@ exports.create = function(req, res, next) {
  */
 
 exports.authenticate = function(req, res, next) {
-  var realm = process.env.AUTH_REALM || 'rest-service-basic-auth-bcrypt' 
+  var realm = process.env.AUTH_REALM || 'API' 
     , authorization = req.headers['authorization']
     , token, decoded, parts, username, password;
 
