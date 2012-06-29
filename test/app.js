@@ -4,7 +4,7 @@ var app = require('../app.js')
   , should = require('should');
 
 describe('app', function() {
-  it('Should be an instance of express.HTTPServer', function(){
-    app.should.be.an.instanceof(express.HTTPServer);
+  it('Should be an instance of express.HTTPSServer', function(){
+    app.should.be.an.instanceof(express.HTTPSServer);
   });
 });
