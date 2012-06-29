@@ -15,7 +15,7 @@ exports.create = function(req, res, next) {
   
   account.username = req.body.username;
   
-  // Create hash from clear text password using bcrypt async
+  // Create hash from clear text password using bcrypt
   account.setHash(req.body.password, function(err) {
     if(err) {
       return next(err);

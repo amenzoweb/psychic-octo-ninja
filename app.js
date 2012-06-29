@@ -2,7 +2,8 @@
  * Module dependencies.
  */
 
-var express = require('express')
+var fs = require('fs')
+  , express = require('express')
   , Resource = require('express-resource')
   , mongoose = require('mongoose')
   , account_controller = require('./controllers/account_controller.js')
@@ -12,25 +13,25 @@ var express = require('express')
  * Environment variables.
  */
 
-var port = process.env.PORT || 3000
-  , db = process.env.MONGOHQ_URL || 'mongodb://localhost/db'
-  , key = process.env.SSL_KEY_PATH
-  , cert = process.env.SSL_CERT_PATH;
+var port = process.env.PORT
+  , db = process.env.MONGO_URL
+  , serverKey = process.env.SERVER_KEY_PATH
+  , serverCert = process.env.SERVER_CERT_PATH
+  , caCert = process.env.CA_CERT_PATH;
 
 /**
  * Create server.
  */
 
-var app;
+var options = {
+    requestCert: true
+  , rejectUnauthorized: true
+  , key: fs.readFileSync(serverKey)
+  , cert: fs.readFileSync(serverCert)
+  , ca: [ fs.readFileSync(caCert) ]
+};
 
-if(key && cert) { // HTTPS
-  app = module.exports = express.createServer({ key: key, cert: cert });
-}
-else { // HTTP
-  console.log('Warning: Using HTTP');
-
-  app = module.exports = express.createServer();
-}
+var app = module.exports = express.createServer(options);
 
 /**
  * Configure server.
@@ -64,13 +65,11 @@ mongoose.connect(db);
  * Routes.
  */
 
-// Public
+// Routes that do not require user credentials.
 app.post('/account', account_controller.create);
 
-// Authenticate all routes/resource defined after this.
+// Routes defined after this require user credentials.
 app.all('*', account_controller.authenticate);
-
-// Secured
 app.resource('documents', document_controller);
 
 /**
@@ -78,5 +77,5 @@ app.resource('documents', document_controller);
  */
 
 app.listen(port, function() {
-  console.log('Running...');
+  console.log('Port: %d, Environment: %s, DB: %s', port, app.settings.env, db);
 });

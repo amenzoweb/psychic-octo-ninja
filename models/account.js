@@ -104,7 +104,7 @@ AccountSchema.static('authenticate', function (username, password, callback) {
         });
       }
       else {
-        // Number of rounds is the same.
+        // Number of rounds is the same, proceed.
         return callback(null, account);
       }
     });
